@@ -229,7 +229,7 @@ fn main() -> Result<()> {
                 }
             }
         }
-        let mut cod_p = match cdb.load_power(cod_full_name) {
+        let cod_p = match cdb.load_power(cod_full_name) {
             Ok(p) => p,
             Err(e) => {
                 if let Some(ZipError::FileNotFound) = e.downcast_ref::<ZipError>() {
