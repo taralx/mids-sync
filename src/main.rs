@@ -63,9 +63,7 @@ fn main() -> Result<()> {
                 break;
             }
             let fields: Vec<&str> = line.split("\t").collect();
-            let index: usize = fields[0]
-                .parse()
-                .with_context(|| format!("line = {:?}", line))?;
+            let index: usize = fields[0].parse().with_context(|| format!("line = {:?}", line))?;
             if index >= eclasses.len() {
                 eclasses.resize(index + 1, None);
             }
@@ -80,63 +78,31 @@ fn main() -> Result<()> {
 
     let mut mdb = mids::from_reader(BufReader::new(File::open(mids_path)?))?;
     println!("Using Mids DB version {}", mdb.version);
-    let mut cdb = cod::Database {
-        zip: ZipArchive::new(zipf)?,
-    };
+    let mut cdb = cod::Database { zip: ZipArchive::new(zipf)? };
     println!("Using CoD revision {}", cdb.revision()?);
     let cidx = cdb.index()?;
 
     // This mapping should be applied to Powerset::full_name and the first two parts of Power::full_name.
     let powerset_map = BTreeMap::from([
-        (
-            "blaster_support.temporal_manipulation",
-            "blaster_support.time_manipulation",
-        ),
-        (
-            "controller_buff.electrical_affinity",
-            "controller_buff.shock_therapy",
-        ),
-        (
-            "corruptor_buff.electrical_affinity",
-            "corruptor_buff.shock_therapy",
-        ),
+        ("blaster_support.temporal_manipulation", "blaster_support.time_manipulation"),
+        ("controller_buff.electrical_affinity", "controller_buff.shock_therapy"),
+        ("corruptor_buff.electrical_affinity", "corruptor_buff.shock_therapy"),
         ("epic.corr_flame_mastery", "epic.corruptor_fire_mastery"),
         ("epic.dark_mastery_blaster", "epic.blaster_dark_mastery"),
-        (
-            "epic.dark_mastery_controller",
-            "epic.controller_dark_mastery",
-        ),
+        ("epic.dark_mastery_controller", "epic.controller_dark_mastery"),
         ("epic.dark_mastery_dominator", "epic.dominator_dark_mastery"),
-        (
-            "epic.dark_mastery_mastermind",
-            "epic.mastermind_dark_mastery",
-        ),
+        ("epic.dark_mastery_mastermind", "epic.mastermind_dark_mastery"),
         ("epic.dark_mastery_tankbrute", "epic.tank_dark_mastery"),
         ("epic.def_flame_mastery", "epic.defender_fire_mastery"),
         ("epic.ice_mastery_defcorr", "epic.defender_ice_mastery"),
         ("epic.ice_mastery_scrapstalk", "epic.scrapper_ice_mastery"),
-        (
-            "epic.psionic_mastery_scrapstalk",
-            "epic.melee_psionic_mastery",
-        ),
-        (
-            "epic.psionic_mastery_tankbrute",
-            "epic.tank_psionic_mastery",
-        ),
+        ("epic.psionic_mastery_scrapstalk", "epic.melee_psionic_mastery"),
+        ("epic.psionic_mastery_tankbrute", "epic.tank_psionic_mastery"),
         ("epic.scrapper_mace_mastery", "epic.stalker_mace_mastery"),
-        (
-            "epic.sentinel_elec_mastery",
-            "epic.sentinel_electricity_mastery",
-        ),
-        (
-            "epic.sentinel_lev_mastery",
-            "epic.sentinel_leviathan_mastery",
-        ),
+        ("epic.sentinel_elec_mastery", "epic.sentinel_electricity_mastery"),
+        ("epic.sentinel_lev_mastery", "epic.sentinel_leviathan_mastery"),
         ("epic.sentinel_psi_mastery", "epic.sentinel_psionic_mastery"),
-        (
-            "mastermind_buff.electrical_affinity",
-            "mastermind_buff.shock_therapy",
-        ),
+        ("mastermind_buff.electrical_affinity", "mastermind_buff.shock_therapy"),
     ]);
 
     let known_bad_display_name = BTreeSet::from([
@@ -200,10 +166,7 @@ fn main() -> Result<()> {
         ("Blaster Archetype Sets", mids::enums::SetType::Blaster),
         ("Brute Archetype Sets", mids::enums::SetType::Brute),
         ("Confuse", mids::enums::SetType::Confuse),
-        (
-            "Controller Archetype Sets",
-            mids::enums::SetType::Controller,
-        ),
+        ("Controller Archetype Sets", mids::enums::SetType::Controller),
         ("Corruptor Archetype Sets", mids::enums::SetType::Corruptor),
         ("Defender Archetype Sets", mids::enums::SetType::Defender),
         ("Defense Debuff", mids::enums::SetType::DefDebuff),
@@ -219,10 +182,7 @@ fn main() -> Result<()> {
         ("Knockback", mids::enums::SetType::Knockback),
         ("Leaping", mids::enums::SetType::JumpNoSprint),
         ("Leaping & Sprints", mids::enums::SetType::Jump),
-        (
-            "Mastermind Archetype Sets",
-            mids::enums::SetType::Mastermind,
-        ),
+        ("Mastermind Archetype Sets", mids::enums::SetType::Mastermind),
         ("Melee AoE Damage", mids::enums::SetType::MeleeAoE),
         ("Melee Damage", mids::enums::SetType::MeleeST),
         ("Pet Damage", mids::enums::SetType::Pets),
@@ -237,10 +197,7 @@ fn main() -> Result<()> {
         ("Sleep", mids::enums::SetType::Sleep),
         ("Slow Movement", mids::enums::SetType::Slow),
         ("Sniper Attacks", mids::enums::SetType::Snipe),
-        (
-            "Soldiers of Arachnos Archetype Sets",
-            mids::enums::SetType::Arachnos,
-        ),
+        ("Soldiers of Arachnos Archetype Sets", mids::enums::SetType::Arachnos),
         ("Stalker Archetype Sets", mids::enums::SetType::Stalker),
         ("Stuns", mids::enums::SetType::Stun),
         ("Tanker Archetype Sets", mids::enums::SetType::Tanker),
@@ -248,20 +205,14 @@ fn main() -> Result<()> {
         ("Threat Duration", mids::enums::SetType::Threat),
         ("To Hit Buff", mids::enums::SetType::ToHit),
         ("To Hit Debuff", mids::enums::SetType::ToHitDeb),
-        (
-            "Universal Damage Sets",
-            mids::enums::SetType::UniversalDamage,
-        ),
+        ("Universal Damage Sets", mids::enums::SetType::UniversalDamage),
         ("Universal Travel", mids::enums::SetType::Travel),
     ]);
 
     let mut changed = false;
     for p in &mut mdb.powers {
         // If there's an AttribMod, skip this.
-        if p.effects
-            .iter()
-            .any(|e| e.power_attribs != mids::enums::PowerAttribs::None)
-        {
+        if p.effects.iter().any(|e| e.power_attribs != mids::enums::PowerAttribs::None) {
             continue;
         }
         let nl: String = p.full_name.to_ascii_lowercase();
@@ -290,12 +241,7 @@ fn main() -> Result<()> {
 
         if p.group_name != "Boosts" && p.group_name != "Incarnate" {
             let mids_enhs = BTreeSet::from_iter(p.enhancements.iter().copied());
-            let cod_enhs = BTreeSet::from_iter(
-                cod_p
-                    .boosts_allowed
-                    .iter()
-                    .filter_map(|b| boost_map.get(b.as_str()).copied()),
-            );
+            let cod_enhs = BTreeSet::from_iter(cod_p.boosts_allowed.iter().filter_map(|b| boost_map.get(b.as_str()).copied()));
 
             if mids_enhs != cod_enhs {
                 let missing: Vec<&str> = cod_enhs
@@ -313,34 +259,19 @@ fn main() -> Result<()> {
                             p.full_name, p.display_name, missing, extra
                         );
                     } else {
-                        println!(
-                            "{} ({}): boosts fixed adding {:?}",
-                            p.full_name, p.display_name, missing
-                        );
+                        println!("{} ({}): boosts fixed adding {:?}", p.full_name, p.display_name, missing);
                     }
                 } else if !extra.is_empty() {
-                    println!(
-                        "{} ({}): boosts fixed removing {:?}",
-                        p.full_name, p.display_name, extra
-                    );
+                    println!("{} ({}): boosts fixed removing {:?}", p.full_name, p.display_name, extra);
                 }
                 p.enhancements = Vec::from_iter(cod_enhs);
                 p.enhancements.sort_unstable();
-                p.boosts_allowed = p
-                    .enhancements
-                    .iter()
-                    .map(|&e| eclasses[e as usize].clone().unwrap())
-                    .collect();
+                p.boosts_allowed = p.enhancements.iter().map(|&e| eclasses[e as usize].clone().unwrap()).collect();
                 changed = true;
             }
 
             let mids_sets = BTreeSet::from_iter(p.set_types.iter().copied());
-            let mut cod_sets = BTreeSet::from_iter(
-                cod_p
-                    .allowed_boostset_cats
-                    .iter()
-                    .map(|b| *boostset_map.get(b.as_str()).unwrap()),
-            );
+            let mut cod_sets = BTreeSet::from_iter(cod_p.allowed_boostset_cats.iter().map(|b| *boostset_map.get(b.as_str()).unwrap()));
             // There is no Flight/Teleport & Sprints category, because Sprint doesn't fly or teleport, but Mids did a dumb.
             if cod_sets.contains(&mids::enums::SetType::Flight) {
                 cod_sets.insert(mids::enums::SetType::FlightNoSprint);
@@ -349,10 +280,8 @@ fn main() -> Result<()> {
                 cod_sets.insert(mids::enums::SetType::TeleportNoSprint);
             }
             if mids_sets != cod_sets {
-                let missing: Vec<mids::enums::SetType> =
-                    cod_sets.difference(&mids_sets).copied().collect();
-                let extra: Vec<mids::enums::SetType> =
-                    mids_sets.difference(&cod_sets).copied().collect();
+                let missing: Vec<mids::enums::SetType> = cod_sets.difference(&mids_sets).copied().collect();
+                let extra: Vec<mids::enums::SetType> = mids_sets.difference(&cod_sets).copied().collect();
                 if !missing.is_empty() {
                     if !extra.is_empty() {
                         println!(
@@ -360,16 +289,10 @@ fn main() -> Result<()> {
                             p.full_name, p.display_name, missing, extra
                         );
                     } else {
-                        println!(
-                            "{} ({}): sets fixed adding {:?}",
-                            p.full_name, p.display_name, missing
-                        );
+                        println!("{} ({}): sets fixed adding {:?}", p.full_name, p.display_name, missing);
                     }
                 } else if !extra.is_empty() {
-                    println!(
-                        "{} ({}): sets fixed removing {:?}",
-                        p.full_name, p.display_name, extra
-                    );
+                    println!("{} ({}): sets fixed removing {:?}", p.full_name, p.display_name, extra);
                 }
                 p.set_types = Vec::from_iter(cod_sets);
                 p.set_types.sort_unstable();
@@ -388,11 +311,7 @@ fn main() -> Result<()> {
 
         let mut suspect_redirect = false;
         if let Some(r) = cod_p.redirect.last() {
-            if !p
-                .effects
-                .iter()
-                .any(|e| e.effect_type == mids::enums::EffectType::PowerRedirect)
-            {
+            if !p.effects.iter().any(|e| e.effect_type == mids::enums::EffectType::PowerRedirect) {
                 suspect_redirect = r.condition_expression != "Always";
                 cod_p = cdb.load_power(&r.name)?;
             }

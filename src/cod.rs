@@ -88,16 +88,10 @@ impl<R: Read + Seek> Database<R> {
                 let Some((_, set_dir)) = set.split_once('.') else {
                     anyhow::bail!("data error: {:?} (from {}) missing dot", set, cat)
                 };
-                let ps: Powerset =
-                    self.load_json(format!("powers/{}/{}/index.json", cat, set_dir))?;
+                let ps: Powerset = self.load_json(format!("powers/{}/{}/index.json", cat, set_dir))?;
                 let mut submap = HashMap::new();
-                for (display_name, power_name) in
-                    ps.power_display_names.into_iter().zip(ps.power_names)
-                {
-                    submap
-                        .entry(display_name)
-                        .and_modify(String::clear)
-                        .or_insert(power_name);
+                for (display_name, power_name) in ps.power_display_names.into_iter().zip(ps.power_names) {
+                    submap.entry(display_name).and_modify(String::clear).or_insert(power_name);
                 }
                 submap.retain(|_k, v| !v.is_empty());
                 map.insert(set, submap);

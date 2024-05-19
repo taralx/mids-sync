@@ -50,13 +50,7 @@ macro_rules! bit_enum {
         };
     }
 
-cs_enum!(Aspect {
-    Res,
-    Max,
-    Abs,
-    Str,
-    Cur,
-});
+cs_enum!(Aspect { Res, Max, Abs, Str, Cur });
 
 cs_enum!(AttribType {
     Magnitude,

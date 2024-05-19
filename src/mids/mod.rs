@@ -63,7 +63,7 @@ pub struct Powerset {
     pub set_name: String,       // = name
     pub description: String,    // = display_help
     pub sub_name: String,       // messy, unused in mids code
-    pub at_class: String, // references Archetype.class_name; reliable only for primary & secondary
+    pub at_class: String,       // references Archetype.class_name; reliable only for primary & secondary
     pub uid_trunk_set: String,
     pub uid_link_secondary: String,
     pub mutex_sets: Vec<MutexSet>,
@@ -109,21 +109,21 @@ pub struct Power {
     pub arc: i32,                      // = arc
     pub max_targets: i32,              // = max_targets_hit
     pub max_boosts: String,            // = str(max_boosts) // unused
-    pub cast_flags: CastFlags, // = bv(caster_near_ground, target_near_ground, cast_when_dead)
-    pub ai_report: Notify,     // = enum(notify_ai_when)
-    pub num_charges: i32,      // = number_of_charges
-    pub usage_time: i32,       // = toggle_detoggle_time
-    pub life_time: i32,        // = power_lifetime
-    pub life_time_in_game: i32, // = power_lifetime_ingame
-    pub num_allowed: i32,      // = number_allowed
-    pub do_not_save: bool,     // = do_not_save
-    pub boosts_allowed: Vec<String>, // = translate(boosts_allowed)
-    pub cast_through_hold: bool, // = contains(cast_through, "hold")
-    pub ignore_strength: bool, // = ignore_strength
-    pub desc_short: String,    // = display_short_help
-    pub desc_long: String,     // = display_help
-    pub enhancements: Vec<u32>, // = translate_via(boosts_allowed, "EClasses.mhd")
-    pub set_types: Vec<SetType>, // = enum(allowed_boostset_cats)
+    pub cast_flags: CastFlags,         // = bv(caster_near_ground, target_near_ground, cast_when_dead)
+    pub ai_report: Notify,             // = enum(notify_ai_when)
+    pub num_charges: i32,              // = number_of_charges
+    pub usage_time: i32,               // = toggle_detoggle_time
+    pub life_time: i32,                // = power_lifetime
+    pub life_time_in_game: i32,        // = power_lifetime_ingame
+    pub num_allowed: i32,              // = number_allowed
+    pub do_not_save: bool,             // = do_not_save
+    pub boosts_allowed: Vec<String>,   // = translate(boosts_allowed)
+    pub cast_through_hold: bool,       // = contains(cast_through, "hold")
+    pub ignore_strength: bool,         // = ignore_strength
+    pub desc_short: String,            // = display_short_help
+    pub desc_long: String,             // = display_help
+    pub enhancements: Vec<u32>,        // = translate_via(boosts_allowed, "EClasses.mhd")
+    pub set_types: Vec<SetType>,       // = enum(allowed_boostset_cats)
     pub click_buff: bool,
     pub always_toggle: bool,
     pub level: i32, // available_level + 1
@@ -252,9 +252,7 @@ pub struct Summon {
 
 pub fn from_reader<R: Read>(mut reader: R) -> netbinary::Result<Database> {
     if netbinary::read_bytes(&mut reader)? != b"Mids Reborn Powers Database" {
-        return Err(netbinary::Error::Custom(
-            "wrong database type (must choose I12.mhd)".to_string(),
-        ));
+        return Err(netbinary::Error::Custom("wrong database type (must choose I12.mhd)".to_string()));
     }
     netbinary::from_reader(reader)
 }

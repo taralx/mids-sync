@@ -147,20 +147,11 @@ impl<'a, W: Write> ser::Serializer for &'a mut Serializer<W> {
         Ok(())
     }
 
-    fn serialize_unit_variant(
-        self,
-        name: &'static str,
-        variant_index: u32,
-        variant: &'static str,
-    ) -> Result<Self::Ok> {
+    fn serialize_unit_variant(self, name: &'static str, variant_index: u32, variant: &'static str) -> Result<Self::Ok> {
         Err(Error::UnsupportedType)
     }
 
-    fn serialize_newtype_struct<T: ?Sized + ser::Serialize>(
-        self,
-        name: &'static str,
-        value: &T,
-    ) -> Result<Self::Ok> {
+    fn serialize_newtype_struct<T: ?Sized + ser::Serialize>(self, name: &'static str, value: &T) -> Result<Self::Ok> {
         value.serialize(self)
     }
 
@@ -187,11 +178,7 @@ impl<'a, W: Write> ser::Serializer for &'a mut Serializer<W> {
         Ok(self)
     }
 
-    fn serialize_tuple_struct(
-        self,
-        name: &'static str,
-        len: usize,
-    ) -> Result<Self::SerializeTupleStruct> {
+    fn serialize_tuple_struct(self, name: &'static str, len: usize) -> Result<Self::SerializeTupleStruct> {
         self.serialize_tuple(len)
     }
 
@@ -267,11 +254,7 @@ impl<'a, W: Write> ser::SerializeStruct for &'a mut Serializer<W> {
     type Ok = ();
     type Error = Error;
 
-    fn serialize_field<T: ?Sized + ser::Serialize>(
-        &mut self,
-        key: &'static str,
-        value: &T,
-    ) -> Result<()> {
+    fn serialize_field<T: ?Sized + ser::Serialize>(&mut self, key: &'static str, value: &T) -> Result<()> {
         value.serialize(&mut **self)
     }
 
@@ -398,19 +381,11 @@ impl<'a, 'de, R: Read> de::Deserializer<'de> for &'a mut Deserializer<R> {
         visitor.visit_unit()
     }
 
-    fn deserialize_unit_struct<V: de::Visitor<'de>>(
-        self,
-        name: &'static str,
-        visitor: V,
-    ) -> Result<V::Value> {
+    fn deserialize_unit_struct<V: de::Visitor<'de>>(self, name: &'static str, visitor: V) -> Result<V::Value> {
         visitor.visit_unit()
     }
 
-    fn deserialize_newtype_struct<V: de::Visitor<'de>>(
-        self,
-        name: &'static str,
-        visitor: V,
-    ) -> Result<V::Value> {
+    fn deserialize_newtype_struct<V: de::Visitor<'de>>(self, name: &'static str, visitor: V) -> Result<V::Value> {
         Err(Error::UnsupportedType)
     }
 
@@ -426,12 +401,7 @@ impl<'a, 'de, R: Read> de::Deserializer<'de> for &'a mut Deserializer<R> {
         visitor.visit_seq(FixedSeq { de: self, n: len })
     }
 
-    fn deserialize_tuple_struct<V: de::Visitor<'de>>(
-        self,
-        name: &'static str,
-        len: usize,
-        visitor: V,
-    ) -> Result<V::Value> {
+    fn deserialize_tuple_struct<V: de::Visitor<'de>>(self, name: &'static str, len: usize, visitor: V) -> Result<V::Value> {
         self.deserialize_tuple(len, visitor)
     }
 
@@ -439,24 +409,11 @@ impl<'a, 'de, R: Read> de::Deserializer<'de> for &'a mut Deserializer<R> {
         Err(Error::UnsupportedType)
     }
 
-    fn deserialize_struct<V: de::Visitor<'de>>(
-        self,
-        name: &'static str,
-        fields: &'static [&'static str],
-        visitor: V,
-    ) -> Result<V::Value> {
-        visitor.visit_seq(FixedSeq {
-            de: self,
-            n: fields.len(),
-        })
+    fn deserialize_struct<V: de::Visitor<'de>>(self, name: &'static str, fields: &'static [&'static str], visitor: V) -> Result<V::Value> {
+        visitor.visit_seq(FixedSeq { de: self, n: fields.len() })
     }
 
-    fn deserialize_enum<V: de::Visitor<'de>>(
-        self,
-        name: &'static str,
-        variants: &'static [&'static str],
-        visitor: V,
-    ) -> Result<V::Value> {
+    fn deserialize_enum<V: de::Visitor<'de>>(self, name: &'static str, variants: &'static [&'static str], visitor: V) -> Result<V::Value> {
         Err(Error::UnsupportedType)
     }
 
@@ -482,10 +439,7 @@ struct FixedSeq<'a, R: Read> {
 impl<'a, 'de, R: Read> SeqAccess<'de> for FixedSeq<'a, R> {
     type Error = Error;
 
-    fn next_element_seed<T: de::DeserializeSeed<'de>>(
-        &mut self,
-        seed: T,
-    ) -> Result<Option<T::Value>> {
+    fn next_element_seed<T: de::DeserializeSeed<'de>>(&mut self, seed: T) -> Result<Option<T::Value>> {
         if self.n == 0 {
             Ok(None)
         } else {
@@ -502,10 +456,7 @@ pub mod array_hack {
     };
     use std::{fmt, marker::PhantomData};
 
-    pub(crate) fn serialize<S: Serializer, T: Serialize>(
-        value: &Vec<T>,
-        serializer: S,
-    ) -> Result<S::Ok, S::Error> {
+    pub(crate) fn serialize<S: Serializer, T: Serialize>(value: &Vec<T>, serializer: S) -> Result<S::Ok, S::Error> {
         struct HackTuple<'a, T>(&'a Vec<T>);
         impl<'a, T: Serialize> Serialize for HackTuple<'a, T> {
             fn serialize<S: Serializer>(&self, serializer: S) -> Result<S::Ok, S::Error> {
@@ -529,9 +480,7 @@ pub mod array_hack {
 
     // This horrible thing is needed to handle the case where an array is prefix
     // by its actual length instead of the usual length-1.
-    pub(crate) fn deserialize<'de, D: Deserializer<'de>, T: Deserialize<'de>>(
-        deserializer: D,
-    ) -> Result<Vec<T>, D::Error> {
+    pub(crate) fn deserialize<'de, D: Deserializer<'de>, T: Deserialize<'de>>(deserializer: D) -> Result<Vec<T>, D::Error> {
         struct HackVisitor<T>(PhantomData<T>);
         struct HackSeed<T> {
             len: usize,
@@ -559,10 +508,7 @@ pub mod array_hack {
         impl<'de, T: Deserialize<'de>> DeserializeSeed<'de> for HackSeed<T> {
             type Value = Vec<T>;
 
-            fn deserialize<D: Deserializer<'de>>(
-                self,
-                deserializer: D,
-            ) -> Result<Self::Value, D::Error> {
+            fn deserialize<D: Deserializer<'de>>(self, deserializer: D) -> Result<Self::Value, D::Error> {
                 deserializer.deserialize_tuple(self.len, self)
             }
         }
