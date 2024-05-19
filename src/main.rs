@@ -301,6 +301,18 @@ fn main() -> Result<()> {
             }
         }
 
+        // Fix level at which the power becomes available.
+        let cod_level = if p.group_name == "Pool" && cod_p.available_level < 4 {
+            4 // Pools aren't available before level 4.
+        } else {
+            cod_p.available_level + 1
+        };
+        if p.level != cod_level {
+            println!("{}: level {} fixed to {} [from {}]", p.full_name, p.level, cod_level, cod_p.full_name);
+            p.level = cod_level;
+            changed = true;
+        }
+
         /*
         if p.group_name != "Boosts" && p.display_name != cod_p.display_name {
             println!(

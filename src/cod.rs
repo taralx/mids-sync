@@ -44,6 +44,7 @@ pub struct Power {
     pub recharge_time: f32,
     pub boosts_allowed: Vec<String>,
     pub allowed_boostset_cats: Vec<String>,
+    pub available_level: i32,
     pub redirect: Vec<Redirect>,
 }
 
