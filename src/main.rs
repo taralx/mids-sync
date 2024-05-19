@@ -240,6 +240,7 @@ fn main() -> Result<()> {
         };
 
         if p.group_name != "Boosts" && p.group_name != "Incarnate" {
+            // Fix eligible enhancement sets.
             let mids_enhs = BTreeSet::from_iter(p.enhancements.iter().copied());
             let cod_enhs = BTreeSet::from_iter(cod_p.boosts_allowed.iter().filter_map(|b| boost_map.get(b.as_str()).copied()));
 
@@ -309,32 +310,31 @@ fn main() -> Result<()> {
         }
         */
 
-        let mut suspect_redirect = false;
-        if let Some(r) = cod_p.redirect.last() {
-            if !p.effects.iter().any(|e| e.effect_type == mids::enums::EffectType::PowerRedirect) {
-                suspect_redirect = r.condition_expression != "Always";
-                cod_p = cdb.load_power(&r.name)?;
+        // Powers that don't end in an "Always" don't always have sensible values. If Mids isn't
+        // using redirects for this power, skip syncing certain problematic attributes (looking at
+        // you, Time Bomb).
+        let mids_has_redirect = p.effects.iter().any(|e| e.effect_type == mids::enums::EffectType::PowerRedirect);
+        let cod_safe_redirect = !cod_p.redirect.last().is_some_and(|r| r.condition_expression != "Always");
+        if mids_has_redirect || cod_safe_redirect {
+            // Fix recharge time.
+            if p.recharge_time != cod_p.recharge_time {
+                println!(
+                    "{} ({}): recharge_time {} fixed to {} [from {}]",
+                    p.full_name, p.display_name, p.recharge_time, cod_p.recharge_time, cod_p.full_name
+                );
+                p.recharge_time = cod_p.recharge_time;
+                p.base_recharge_time = p.recharge_time;
+                changed = true;
             }
-        }
-        if p.recharge_time != cod_p.recharge_time {
-            println!(
-                "{} ({}): recharge_time {} fixed to {} [from {}]",
-                p.full_name, p.display_name, p.recharge_time, cod_p.recharge_time, cod_p.full_name
-            );
-            p.recharge_time = cod_p.recharge_time;
-            p.base_recharge_time = p.recharge_time;
-            changed = true;
-        }
-        if suspect_redirect {
-            continue;
-        }
-        if p.cast_time != cod_p.activation_time {
-            println!(
-                "{} ({}): cast_time {} fixed to {} [from {}]",
-                p.full_name, p.display_name, p.cast_time, cod_p.activation_time, cod_p.full_name
-            );
-            p.cast_time = cod_p.activation_time;
-            changed = true;
+            // Fix cast time.
+            if p.cast_time != cod_p.activation_time {
+                println!(
+                    "{} ({}): cast_time {} fixed to {} [from {}]",
+                    p.full_name, p.display_name, p.cast_time, cod_p.activation_time, cod_p.full_name
+                );
+                p.cast_time = cod_p.activation_time;
+                changed = true;
+            }
         }
     }
 
